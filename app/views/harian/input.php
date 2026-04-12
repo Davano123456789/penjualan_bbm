@@ -229,7 +229,7 @@
         <!-- FINAL STATUS DRAWER -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Actual Cash Input -->
-            <div class="lg:col-span-1 bg-slate-900 p-8 rounded-3xl text-white shadow-2xl relative overflow-hidden group">
+            <div class="lg:col-span-3 bg-slate-900 p-8 rounded-3xl text-white shadow-2xl relative overflow-hidden group">
                 <div class="absolute bottom-0 right-0 opacity-10 -mr-4 -mb-4 group-hover:scale-110 transition-all">
                     <i class="fas fa-money-bill-wave text-8xl"></i>
                 </div>
@@ -249,18 +249,6 @@
                         <label class="block text-[10px] font-bold text-slate-500 uppercase mb-2">Total Kas Fisik (Di Tangan)</label>
                         <input type="number" readonly name="total_penerimaan_kas" id="actual_cash_total" class="w-full px-5 py-4 bg-slate-700/50 border-none rounded-2xl text-2xl font-black text-white shadow-inner">
                     </div>
-                </div>
-            </div>
-
-            <!-- Comparison Status -->
-            <div id="status_container" class="lg:col-span-2 p-8 rounded-3xl border-4 border-slate-100 shadow-sm flex flex-col justify-center items-center text-center transition-all duration-500 bg-slate-50">
-                <div id="status_icon" class="w-20 h-20 rounded-2xl bg-slate-200 text-white flex items-center justify-center text-3xl mb-5 transition-all transform -rotate-6">
-                    <i class="fas fa-spinner fa-spin"></i>
-                </div>
-                <h3 id="status_title" class="text-2xl font-black text-slate-300 uppercase tracking-[0.2em] mb-2">MENUNGGU DATA...</h3>
-                <div class="space-y-2">
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Selisih Akhir (Purity Audit)</p>
-                    <span id="display_selisih" class="text-4xl font-black text-slate-800 tracking-tighter italic underline">Rp 0</span>
                 </div>
             </div>
         </div>
@@ -314,7 +302,6 @@
         const sisaTopInput = document.getElementById('sisa_top');
         const targetUangKertasInput = document.getElementById('target_uang_kertas');
         const actualCashTotalInput = document.getElementById('actual_cash_total');
-        const displaySelisih = document.getElementById('display_selisih');
         const hiddenSisaOutput = document.getElementById('hidden_sisa_output');
 
         const formatter = new Intl.NumberFormat('id-ID', {
@@ -401,7 +388,6 @@
             actualCashTotalInput.value = actualCashTotal;
 
             const finalGap = actualCashTotal - targetSetoran;
-            displaySelisih.innerText = formatter.format(finalGap);
             hiddenSisaOutput.value = finalGap;
 
             // Show status as soon as there's grand total, not waiting for actual cash input
@@ -409,23 +395,8 @@
         }
 
         function updateStatusUI(gap, isInitial) {
-            if (isInitial) {
-                statusTitle.innerText = "MENUNGGU DATA...";
-                return;
-            }
-            if (gap === 0) {
-                statusContainer.className = 'lg:col-span-2 p-8 rounded-3xl border-4 border-emerald-100 shadow-xl flex flex-col justify-center items-center text-center bg-emerald-50 scale-[1.02] transition-all';
-                statusIcon.innerHTML = `<i class="fas fa-check-circle"></i>`;
-                statusTitle.innerText = 'FIX / MATCH! ✅';
-            } else if (gap < 0) {
-                statusContainer.className = 'lg:col-span-2 p-8 rounded-3xl border-4 border-rose-100 shadow-xl flex flex-col justify-center items-center text-center bg-rose-50 transition-all';
-                statusIcon.innerHTML = `<i class="fas fa-exclamation-triangle"></i>`;
-                statusTitle.innerText = 'MINUS / LOSIS ⚠️';
-            } else {
-                statusContainer.className = 'lg:col-span-2 p-8 rounded-3xl border-4 border-blue-100 shadow-xl flex flex-col justify-center items-center text-center bg-blue-50 transition-all';
-                statusIcon.innerHTML = `<i class="fas fa-plus-circle"></i>`;
-                statusTitle.innerText = 'SURPLUS / LEBIH 💰';
-            }
+            // Status UI removed
+            return;
         }
 
         function updateProductSummaryView(data) {

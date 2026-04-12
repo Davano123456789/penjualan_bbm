@@ -18,23 +18,70 @@ class Totakhir_model {
         $this->db->bind('tahun', (int)$tahun);
         $saved_data = $this->db->single();
 
-        // 1. Dapatkan Totalisator (Volume Terjual)
+        // 1. Dapatkan Detail Per Nozzle (Sesuai Excel)
+        $detail_nozzle = [];
+        $nozzle_groups = [
+            ['label' => 'Nozzel 1', 'product_id' => 1, 'nama_produk' => 'Pertamax'],
+            ['label' => 'Nozzel 2', 'product_id' => 2, 'nama_produk' => 'Pertamax'],
+            ['label' => 'Nozzel 1', 'product_id' => 3, 'nama_produk' => 'Dex'],
+            ['label' => 'Nozzel 2', 'product_id' => 4, 'nama_produk' => 'Dex']
+        ];
+
         $terjual_pertamax = 0;
         $terjual_dex = 0;
-        
-        // Pertamax (Nozzle 1 & 2)
-        $this->db->query("SELECT SUM(totalisator_akhir - totalisator_awal) as terjual FROM penjualan_harian ph JOIN harian h ON ph.harian_id = h.id WHERE ph.produk_id IN (1,2) AND MONTH(h.tanggal) = :bulan AND YEAR(h.tanggal) = :tahun AND totalisator_akhir > 0");
-        $this->db->bind('bulan', (int)$bulan);
-        $this->db->bind('tahun', (int)$tahun);
-        $res = $this->db->single();
-        if($res) $terjual_pertamax = $res['terjual'];
-        
-        // Dex (Nozzle 3 & 4)
-        $this->db->query("SELECT SUM(totalisator_akhir - totalisator_awal) as terjual FROM penjualan_harian ph JOIN harian h ON ph.harian_id = h.id WHERE ph.produk_id IN (3,4) AND MONTH(h.tanggal) = :bulan AND YEAR(h.tanggal) = :tahun AND totalisator_akhir > 0");
-        $this->db->bind('bulan', (int)$bulan);
-        $this->db->bind('tahun', (int)$tahun);
-        $res = $this->db->single();
-        if($res) $terjual_dex = $res['terjual'];
+        $margin = 600;
+
+        foreach ($nozzle_groups as $n) {
+            $pid = $n['product_id'];
+            
+            // Get Min Totalisator Awal and Max Totalisator Akhir
+            $this->db->query("SELECT 
+                                (SELECT totalisator_awal FROM penjualan_harian ph JOIN harian h ON ph.harian_id = h.id WHERE ph.produk_id = :pid AND MONTH(h.tanggal) = :bulan AND YEAR(h.tanggal) = :tahun ORDER BY h.tanggal ASC LIMIT 1) as tot_awal,
+                                (SELECT totalisator_akhir FROM penjualan_harian ph JOIN harian h ON ph.harian_id = h.id WHERE ph.produk_id = :pid AND MONTH(h.tanggal) = :bulan AND YEAR(h.tanggal) = :tahun ORDER BY h.tanggal DESC LIMIT 1) as tot_akhir,
+                                (SELECT total_rupiah / liter_terjual FROM penjualan_harian ph JOIN harian h ON ph.harian_id = h.id WHERE ph.produk_id = :pid AND MONTH(h.tanggal) = :bulan AND YEAR(h.tanggal) = :tahun AND liter_terjual > 0 LIMIT 1) as harga_satuan
+                              FROM penjualan_harian ph
+                              JOIN harian h ON ph.harian_id = h.id
+                              WHERE ph.produk_id = :pid AND MONTH(h.tanggal) = :bulan AND YEAR(h.tanggal) = :tahun
+                              LIMIT 1");
+            
+            $this->db->bind('pid', $pid);
+            $this->db->bind('bulan', (int)$bulan);
+            $this->db->bind('tahun', (int)$tahun);
+            $res = $this->db->single();
+
+            $tot_awal = $res['tot_awal'] ?? 0;
+            $tot_akhir = $res['tot_akhir'] ?? 0;
+            $harga = $res['harga_satuan'] ?? 0;
+            
+            // If they are Pertamax (ID 1,2)
+            if ($pid == 1 || $pid == 2) {
+                if ($harga == 0) $harga = 12200; // Default price backup
+            } else {
+                if ($harga == 0) $harga = 14850; // Default price backup for Dex
+            }
+
+            $liter = max(0, $tot_akhir - $tot_awal);
+            $jumlah = $liter * $harga;
+
+            $detail_nozzle[] = [
+                'nozzle' => $n['label'],
+                'produk' => $n['nama_produk'],
+                'tot_awal' => $tot_awal,
+                'tot_akhir' => $tot_akhir,
+                'tera' => 0, // Placeholder
+                'liter' => $liter,
+                'harga' => $harga,
+                'jumlah' => $jumlah,
+                'margin' => $margin,
+                'laba' => $liter * $margin
+            ];
+
+            if ($pid == 1 || $pid == 2) {
+                $terjual_pertamax += $liter;
+            } else {
+                $terjual_dex += $liter;
+            }
+        }
 
         // Laba Kotor (Margin 600 per liter)
         $margin = 600;
@@ -121,6 +168,7 @@ class Totakhir_model {
             'laba_pertamax' => $laba_pertamax,
             'laba_dex' => $laba_dex,
             'total_laba_kotor' => $total_laba_kotor,
+            'detail_nozzle' => $detail_nozzle,
             'biaya_gaji' => $biaya_gaji,
             'biaya_kas' => $biaya_kas,
             'biaya_pph' => $saved_data ? $saved_data['biaya_pph'] : 0,

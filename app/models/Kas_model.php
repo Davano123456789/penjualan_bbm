@@ -9,6 +9,13 @@ class Kas_model {
         $this->db = new Database;
     }
 
+    public function getKasById($id)
+    {
+        $this->db->query("SELECT * FROM " . $this->table . " WHERE id = :id");
+        $this->db->bind('id', $id);
+        return $this->db->single();
+    }
+
     public function getKasBulan($bulan, $tahun, $kategori = 'lemari')
     {
         $sql = "SELECT * FROM " . $this->table . " WHERE kategori = :kategori AND YEAR(tanggal) = :tahun";
@@ -193,37 +200,78 @@ class Kas_model {
 
     public function hapusDataKas($id)
     {
-        // 1. Delete EDC record first
-        require_once 'EDC_model.php';
-        $edc_model = new EDC_model();
+        // ... (existing code omitted for brevity but I need to include it if I'm replacing the whole block)
+        // Wait, I should replace just the end or add after.
+    }
 
-        // Check if it's a paired transaction
-        $this->db->query("SELECT transaksi_id FROM " . $this->table . " WHERE id = :id");
+    public function ubahDataKas($data)
+    {
+        $id = $data['id'];
+        
+        // 1. Get current data to check for paired transaction
+        $this->db->query("SELECT transaksi_id, harian_id, pengeluaran_id FROM " . $this->table . " WHERE id = :id");
         $this->db->bind('id', $id);
-        $row = $this->db->single();
+        $current = $this->db->single();
 
-        if ($row && !empty($row['transaksi_id'])) {
-            // Find all IDs with same transaksi_id for EDC cleanup
-            $this->db->query("SELECT id FROM " . $this->table . " WHERE transaksi_id = :transaksi_id");
-            $this->db->bind('transaksi_id', $row['transaksi_id']);
-            $ids = $this->db->resultSet();
-            foreach ($ids as $i) {
-                $edc_model->deleteByKasId($i['id']);
-            }
+        if ($current['harian_id'] || $current['pengeluaran_id']) {
+            return 0; // Prevent editing automatic entries
+        }
 
-            // Delete all with the same transaksi_id
-            $this->db->query("DELETE FROM " . $this->table . " WHERE transaksi_id = :transaksi_id");
-            $this->db->bind('transaksi_id', $row['transaksi_id']);
+        if (!empty($current['transaksi_id'])) {
+            // Pair Update (Lemari & Arus)
+            $query = "UPDATE " . $this->table . " SET 
+                        tanggal = :tanggal,
+                        keterangan = :keterangan,
+                        tipe = :tipe,
+                        jumlah = :jumlah,
+                        kategori_biaya = :kategori_biaya
+                      WHERE transaksi_id = :transaksi_id";
+            $this->db->query($query);
+            $this->db->bind('transaksi_id', $current['transaksi_id']);
         } else {
-            // Delete only this EDC record
-            $edc_model->deleteByKasId($id);
-
-            // Delete only this ID
-            $this->db->query('DELETE FROM ' . $this->table . ' WHERE id = :id');
+            // Single Update
+            $query = "UPDATE " . $this->table . " SET 
+                        tanggal = :tanggal,
+                        keterangan = :keterangan,
+                        tipe = :tipe,
+                        jumlah = :jumlah,
+                        kategori_biaya = :kategori_biaya
+                      WHERE id = :id";
+            $this->db->query($query);
             $this->db->bind('id', $id);
         }
-        
+
+        $this->db->bind('tanggal',          $data['tanggal']);
+        $this->db->bind('keterangan',       $data['keterangan']);
+        $this->db->bind('tipe',             $data['tipe']);
+        $this->db->bind('jumlah',           $data['jumlah']);
+        $this->db->bind('kategori_biaya',   (!empty($data['kategori_biaya'])) ? $data['kategori_biaya'] : null);
+
         $this->db->execute();
+
+        // EDC Sync Rewrite (Delete and Re-sync is safest)
+        require_once 'EDC_model.php';
+        $edc_model = new EDC_model();
+        
+        if (!empty($current['transaksi_id'])) {
+            $this->db->query("SELECT id, kategori FROM " . $this->table . " WHERE transaksi_id = :transaksi_id");
+            $this->db->bind('transaksi_id', $current['transaksi_id']);
+            $pairs = $this->db->resultSet();
+            foreach ($pairs as $p) {
+                $edc_model->deleteByKasId($p['id']);
+                $ket = strtolower($data['keterangan']);
+                if ((strpos($ket, 'qris') !== false || strpos($ket, 'debit') !== false) && $p['kategori'] === 'arus') {
+                    $edc_model->syncFromKas($p['id'], $data);
+                }
+            }
+        } else {
+            $edc_model->deleteByKasId($id);
+            $ket = strtolower($data['keterangan']);
+            if (strpos($ket, 'qris') !== false || strpos($ket, 'debit') !== false) {
+                $edc_model->syncFromKas($id, $data);
+            }
+        }
+
         return $this->db->rowCount();
     }
 }

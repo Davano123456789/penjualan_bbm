@@ -1,6 +1,6 @@
 <?php
 
-define('BASEURL', 'http://localhost/penjualan_bbm/public');
+define('BASEURL', 'http://localhost/penjualan_bbm/penjualan_bbm/public');
 
 // DB Constants
 define('DB_HOST', 'localhost');

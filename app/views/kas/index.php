@@ -83,14 +83,24 @@
                                  <td class="px-4 py-3 text-right text-rose-500 font-bold"><?= $kredit > 0 ? number_format($kredit, 0, ',', '.') : '-'; ?></td>
                                  <td class="px-4 py-3 text-right font-black text-slate-700 bg-blue-50/20"><?= number_format($curr_bal, 0, ',', '.'); ?></td>
                                  <td class="px-2 py-3 text-center">
-                                     <?php if ($r['harian_id'] === NULL): ?>
-                                     <a href="<?= BASEURL; ?>/kas/hapus/<?= $r['id']; ?>" onclick="return confirm('Hapus transaksi manual ini?')" 
-                                        class="text-slate-200 hover:text-rose-600 transition-colors opacity-0 group-hover:opacity-100">
-                                         <i class="fas fa-trash-alt text-[10px]"></i>
-                                     </a>
-                                     <?php else: ?>
-                                     <i class="fas fa-link text-[8px] text-slate-200" title="Sinkron otomatis dengan Harian"></i>
-                                     <?php endif; ?>
+                                     <div class="flex items-center justify-center gap-1.5">
+                                         <?php if ($r['harian_id'] === NULL): ?>
+                                         <button onclick="editKas(<?= $r['id']; ?>)" 
+                                            class="w-7 h-7 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all flex items-center justify-center shadow-sm"
+                                            title="Edit Transaksi">
+                                             <i class="fas fa-edit text-[10px]"></i>
+                                         </button>
+                                         <a href="<?= BASEURL; ?>/kas/hapus/<?= $r['id']; ?>" onclick="return confirm('Hapus transaksi manual ini?')" 
+                                            class="w-7 h-7 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center shadow-sm"
+                                            title="Hapus Transaksi">
+                                             <i class="fas fa-trash-alt text-[10px]"></i>
+                                         </a>
+                                         <?php else: ?>
+                                         <div class="w-7 h-7 flex items-center justify-center" title="Sinkron otomatis dengan Harian">
+                                             <i class="fas fa-link text-[10px] text-slate-300"></i>
+                                         </div>
+                                         <?php endif; ?>
+                                     </div>
                                  </td>
                              </tr>
                              <?php endforeach; ?>
@@ -151,14 +161,24 @@
                                  <td class="px-4 py-3 text-right text-rose-500 font-bold"><?= $kredit > 0 ? number_format($kredit, 0, ',', '.') : '-'; ?></td>
                                  <td class="px-4 py-3 text-right font-black text-slate-700 bg-emerald-50/20"><?= number_format($curr_bal_arus, 0, ',', '.'); ?></td>
                                  <td class="px-2 py-3 text-center">
-                                     <?php if ($r['harian_id'] === NULL): ?>
-                                     <a href="<?= BASEURL; ?>/kas/hapus/<?= $r['id']; ?>" onclick="return confirm('Hapus transaksi manual ini?')" 
-                                        class="text-slate-200 hover:text-rose-600 transition-colors opacity-0 group-hover:opacity-100">
-                                         <i class="fas fa-trash-alt text-[10px]"></i>
-                                     </a>
-                                     <?php else: ?>
-                                     <i class="fas fa-link text-[8px] text-slate-200" title="Sinkron otomatis dengan Harian"></i>
-                                     <?php endif; ?>
+                                     <div class="flex items-center justify-center gap-1.5">
+                                         <?php if ($r['harian_id'] === NULL): ?>
+                                         <button onclick="editKas(<?= $r['id']; ?>)" 
+                                            class="w-7 h-7 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all flex items-center justify-center shadow-sm"
+                                            title="Edit Transaksi">
+                                             <i class="fas fa-edit text-[10px]"></i>
+                                         </button>
+                                         <a href="<?= BASEURL; ?>/kas/hapus/<?= $r['id']; ?>" onclick="return confirm('Hapus transaksi manual ini?')" 
+                                            class="w-7 h-7 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center shadow-sm"
+                                            title="Hapus Transaksi">
+                                             <i class="fas fa-trash-alt text-[10px]"></i>
+                                         </a>
+                                         <?php else: ?>
+                                         <div class="w-7 h-7 flex items-center justify-center" title="Sinkron otomatis dengan Harian">
+                                             <i class="fas fa-link text-[10px] text-slate-300"></i>
+                                         </div>
+                                         <?php endif; ?>
+                                     </div>
                                  </td>
                              </tr>
                              <?php endforeach; ?>
@@ -232,6 +252,50 @@
          </form>
      </div>
  </div>
+
+ <!-- Modal Edit Kas -->
+ <div id="modalEditKas" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
+         <div class="bg-amber-500 p-6 text-white flex justify-between items-center">
+             <h3 class="font-black text-lg uppercase tracking-tight">Edit Transaksi</h3>
+             <button onclick="document.getElementById('modalEditKas').classList.add('hidden')" class="text-white/70 hover:text-white transition-colors">
+                 <i class="fas fa-times text-xl"></i>
+             </button>
+         </div>
+         <form action="<?= BASEURL; ?>/kas/ubah" method="POST" class="p-8 space-y-5">
+             <input type="hidden" name="id" id="edit_id">
+             <div>
+                 <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">📅 Tanggal</label>
+                 <input type="date" name="tanggal" id="edit_tanggal" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold">
+             </div>
+             <div>
+                 <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">🔄 Tipe</label>
+                 <select name="tipe" id="edit_tipe" onchange="toggleBiayaEdit(this.value)" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold">
+                     <option value="debit">🟢 Uang Masuk (Debit)</option>
+                     <option value="kredit">🔴 Uang Keluar (Kredit)</option>
+                 </select>
+             </div>
+             <div id="edit_section_biaya" class="hidden">
+                 <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">🏷️ Kategori Pengeluaran</label>
+                 <select name="kategori_biaya" id="edit_kategori_biaya" class="w-full px-4 py-3 bg-blue-50 border border-blue-200 rounded-xl text-sm font-bold text-blue-600">
+                     <option value="">-- Hanya Transaksi Biasa --</option>
+                     <option value="Operasional">🛠️ Operasional</option>
+                     <option value="Curah">🚚 Curah / Suplier</option>
+                     <option value="Lainnya">📦 Lain-lain</option>
+                 </select>
+             </div>
+             <div>
+                 <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">✏️ Keterangan</label>
+                 <input type="text" name="keterangan" id="edit_keterangan" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm">
+             </div>
+             <div>
+                 <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">💰 Jumlah Nominal</label>
+                 <input type="number" name="jumlah" id="edit_jumlah" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-lg font-black">
+             </div>
+             <button type="submit" class="w-full py-4 bg-amber-500 text-white rounded-2xl font-black hover:bg-amber-600 shadow-xl shadow-amber-200 transition-all">UPDATE TRANSAKSI</button>
+         </form>
+     </div>
+ </div>
  
  <script>
      function toggleBiaya(val) {
@@ -241,5 +305,30 @@
          } else {
              section.classList.add('hidden');
          }
+     }
+
+     function toggleBiayaEdit(val) {
+         const section = document.getElementById('edit_section_biaya');
+         if(val === 'kredit') {
+             section.classList.remove('hidden');
+         } else {
+             section.classList.add('hidden');
+         }
+     }
+
+     function editKas(id) {
+         fetch('<?= BASEURL; ?>/kas/getEdit/' + id)
+             .then(res => res.json())
+             .then(data => {
+                 document.getElementById('edit_id').value = data.id;
+                 document.getElementById('edit_tanggal').value = data.tanggal;
+                 document.getElementById('edit_tipe').value = data.tipe;
+                 document.getElementById('edit_keterangan').value = data.keterangan;
+                 document.getElementById('edit_jumlah').value = data.jumlah;
+                 document.getElementById('edit_kategori_biaya').value = data.kategori_biaya || '';
+                 
+                 toggleBiayaEdit(data.tipe);
+                 document.getElementById('modalEditKas').classList.remove('hidden');
+             });
      }
  </script>

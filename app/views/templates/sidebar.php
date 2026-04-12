@@ -6,7 +6,7 @@
         </div>
         <h2 class="text-xl font-bold text-white tracking-tight">BBM Sales</h2>
     </div>
-    
+
     <nav class="mt-8 px-4 pb-10">
         <ul class="space-y-1">
             <li>
@@ -20,7 +20,7 @@
             <li class="pt-4 pb-2">
                 <span class="px-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Menu Laporan</span>
             </li>
-            
+
             <li>
                 <a href="<?= BASEURL; ?>/harian" class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 <?= $data['judul'] == 'Laporan Harian' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'hover:bg-slate-800 hover:text-white' ?> group">
                     <i class="fas fa-calendar-day w-5 text-center group-hover:text-blue-500"></i>
@@ -81,16 +81,34 @@
                     <span class="font-medium text-sm <?= $data['judul'] == 'Laporan Gaji Karyawan' ? 'text-white' : 'text-slate-400' ?> group-hover:text-white">Gaji</span>
                 </a>
             </li>
-            <li>
+            <!-- <li>
                 <a href="<?= BASEURL; ?>/voucher" class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 <?= $data['judul'] == 'Laporan Voucher BBM' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'hover:bg-slate-800 hover:text-white' ?> group">
                     <i class="fas fa-ticket w-5 text-center group-hover:text-blue-500"></i>
                     <span class="font-medium text-sm <?= $data['judul'] == 'Laporan Voucher BBM' ? 'text-white' : 'text-slate-400' ?> group-hover:text-white">Voucher</span>
                 </a>
-            </li>
+            </li> -->
         </ul>
 
         <div class="mt-10 pt-8 border-t border-slate-800">
-            <h3 class="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4">Pengaturan</h3>
+            <h3 class="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4">Akun Saya</h3>
+            
+            <!-- User Info Card -->
+            <?php if(isset($_SESSION['user'])): ?>
+            <div class="px-4 mb-6">
+                <div class="bg-slate-800/50 rounded-2xl p-4 border border-slate-700/50 backdrop-blur-sm">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-black text-sm shadow-lg shadow-blue-500/20">
+                            <?= strtoupper(substr($_SESSION['user']['nama'], 0, 1)); ?>
+                        </div>
+                        <div class="flex flex-col overflow-hidden">
+                            <span class="text-xs font-black text-white truncate"><?= $_SESSION['user']['nama']; ?></span>
+                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-tighter"><?= $_SESSION['user']['role']; ?></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
+
             <ul class="space-y-1">
                 <li>
                     <a href="<?= BASEURL; ?>/operator" class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 <?= $data['judul'] == 'Daftar Operator' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'hover:bg-slate-800 hover:text-white' ?> group">
@@ -99,9 +117,9 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-rose-400 hover:bg-rose-500/10 hover:text-rose-500 transition-all duration-200 mt-4">
+                    <a href="<?= BASEURL; ?>/login/logout" onclick="return confirm('Apakah Anda yakin ingin keluar?')" class="flex items-center gap-3 px-4 py-3 rounded-lg text-rose-400 hover:bg-rose-500/10 hover:text-rose-500 transition-all duration-200 mt-2">
                         <i class="fas fa-right-from-bracket w-5 text-center"></i>
-                        <span class="font-medium text-sm">Keluar</span>
+                        <span class="font-medium text-sm">Keluar Sistem</span>
                     </a>
                 </li>
             </ul>

@@ -2,7 +2,7 @@
 <header class="flex flex-col md:flex-row items-center justify-between gap-6 mb-10 px-6 py-4 bg-white rounded-2xl shadow-sm border border-slate-100">
     <div class="flex items-center gap-6 w-full md:w-auto">
         <div class="flex flex-col">
-            <h1 class="text-2xl font-bold text-slate-800 tracking-tight leading-tight">Halo, Admin!</h1>
+            <h1 class="text-2xl font-bold text-slate-800 tracking-tight leading-tight">Halo, <?= $_SESSION['user']['nama'] ?? 'User'; ?>!</h1>
             <p class="text-sm font-medium text-slate-500">Laporan penjualan BBM hari ini terlihat stabil.</p>
         </div>
     </div>
@@ -23,11 +23,11 @@
         <!-- User Profile -->
         <div class="flex items-center gap-4 group cursor-pointer pl-4 border-l border-slate-200">
             <div class="flex flex-col items-end">
-                <span class="text-sm font-bold text-slate-800">John Doe</span>
-                <span class="text-xs font-semibold text-blue-600 uppercase tracking-wider">Manager</span>
+                <span class="text-sm font-bold text-slate-800"><?= $_SESSION['user']['nama'] ?? 'User'; ?></span>
+                <span class="text-xs font-semibold text-blue-600 uppercase tracking-wider"><?= $_SESSION['user']['role'] ?? 'System'; ?></span>
             </div>
             <div class="relative">
-                <img class="w-12 h-12 rounded-xl object-cover border-2 border-blue-100 group-hover:border-blue-500 transition-all shadow-sm" src="https://ui-avatars.com/api/?name=Admin&background=2563eb&color=fff&bold=true" alt="Profile">
+                <img class="w-12 h-12 rounded-xl object-cover border-2 border-blue-100 group-hover:border-blue-500 transition-all shadow-sm" src="https://ui-avatars.com/api/?name=<?= $_SESSION['user']['nama'] ?? 'User'; ?>&background=2563eb&color=fff&bold=true" alt="Profile">
                 <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white shadow-sm"></div>
             </div>
         </div>

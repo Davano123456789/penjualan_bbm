@@ -53,4 +53,24 @@ class Kas extends Controller {
             exit;
         }
     }
+
+    public function getEdit($id)
+    {
+        echo json_encode($this->model('Kas_model')->getKasById($id));
+    }
+
+    public function ubah()
+    {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            if ($this->model('Kas_model')->ubahDataKas($_POST) >= 0) {
+                Flasher::setFlash('Perubahan', 'Berhasil Disimpan', 'success');
+                header('Location: ' . BASEURL . '/kas');
+                exit;
+            } else {
+                Flasher::setFlash('Perubahan', 'Gagal Disimpan', 'error');
+                header('Location: ' . BASEURL . '/kas');
+                exit;
+            }
+        }
+    }
 }

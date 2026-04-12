@@ -85,34 +85,44 @@
                     <div class="w-1 h-5 bg-blue-600 rounded-full"></div>
                     <h4 class="text-xs font-black text-slate-500 uppercase tracking-widest">A. Pendapatan Laba Kotor (Margin/Liter)</h4>
                 </div>
-                <div class="bg-slate-50 rounded-2xl overflow-hidden">
-                    <table class="w-full text-left">
+                <div class="bg-slate-50 rounded-2xl overflow-x-auto">
+                    <table class="w-full text-left min-w-[800px]">
                         <thead>
                             <tr class="text-[10px] text-slate-400 font-black uppercase tracking-widest border-b border-slate-100">
-                                <th class="px-5 py-3">Produk</th>
-                                <th class="px-5 py-3 text-right">Volume Terjual (L)</th>
-                                <th class="px-5 py-3 text-right">Margin/Liter</th>
-                                <th class="px-5 py-3 text-right">Laba Kotor</th>
+                                <th class="px-5 py-4 border-r border-slate-100">Nozzel</th>
+                                <th class="px-5 py-4 border-r border-slate-100">Produk</th>
+                                <th class="px-5 py-4 text-right border-r border-slate-100">Tot Awal</th>
+                                <th class="px-5 py-4 text-right border-r border-slate-100">Tot Akhir</th>
+                                <th class="px-5 py-4 text-right border-r border-slate-100">Tera</th>
+                                <th class="px-5 py-4 text-right border-r border-slate-100 bg-blue-50/50">Liter</th>
+                                <th class="px-5 py-4 text-right border-r border-slate-100">Harga</th>
+                                <th class="px-5 py-4 text-right border-r border-slate-100">Jumlah</th>
+                                <th class="px-5 py-4 text-right border-r border-slate-100">Margin</th>
+                                <th class="px-5 py-4 text-right bg-emerald-50/50">Laba Kotor</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
-                            <tr>
-                                <td class="px-5 py-3 font-bold text-slate-700">Pertamax</td>
-                                <td class="px-5 py-3 text-right font-mono text-slate-600"><?= number_format($r['terjual_pertamax'], 2, ',', '.'); ?> L</td>
-                                <td class="px-5 py-3 text-right font-mono text-slate-500">Rp 600</td>
-                                <td class="px-5 py-3 text-right font-black text-slate-800">Rp <?= number_format($r['laba_pertamax'], 0, ',', '.'); ?></td>
+                            <?php foreach ($r['detail_nozzle'] as $dn): ?>
+                            <tr class="hover:bg-slate-100/50 transition-all font-mono text-[11px]">
+                                <td class="px-5 py-3 font-bold text-slate-700 border-r border-slate-100"><?= $dn['nozzle']; ?></td>
+                                <td class="px-5 py-3 text-slate-600 border-r border-slate-100"><?= $dn['produk']; ?></td>
+                                <td class="px-5 py-3 text-right text-slate-500 border-r border-slate-100"><?= number_format($dn['tot_awal'], 2, ',', '.'); ?></td>
+                                <td class="px-5 py-3 text-right text-slate-700 border-r border-slate-100"><?= number_format($dn['tot_akhir'], 2, ',', '.'); ?></td>
+                                <td class="px-5 py-3 text-right text-slate-400 border-r border-slate-100"><?= number_format($dn['tera'], 2, ',', '.'); ?></td>
+                                <td class="px-5 py-3 text-right font-black text-blue-700 border-r border-slate-100 bg-blue-50/20"><?= number_format($dn['liter'], 2, ',', '.'); ?> L</td>
+                                <td class="px-5 py-3 text-right text-slate-600 border-r border-slate-100">Rp <?= number_format($dn['harga'], 0, ',', '.'); ?></td>
+                                <td class="px-5 py-3 text-right font-bold text-slate-800 border-r border-slate-100">Rp <?= number_format($dn['jumlah'], 0, ',', '.'); ?></td>
+                                <td class="px-5 py-3 text-right text-slate-500 border-r border-slate-100">Rp <?= number_format($dn['margin'], 0, ',', '.'); ?></td>
+                                <td class="px-5 py-3 text-right font-black text-emerald-600 bg-emerald-50/20">Rp <?= number_format($dn['laba'], 0, ',', '.'); ?></td>
                             </tr>
-                            <tr>
-                                <td class="px-5 py-3 font-bold text-slate-700">Dex</td>
-                                <td class="px-5 py-3 text-right font-mono text-slate-600"><?= number_format($r['terjual_dex'], 2, ',', '.'); ?> L</td>
-                                <td class="px-5 py-3 text-right font-mono text-slate-500">Rp 600</td>
-                                <td class="px-5 py-3 text-right font-black text-slate-800">Rp <?= number_format($r['laba_dex'], 0, ',', '.'); ?></td>
-                            </tr>
+                            <?php endforeach; ?>
                         </tbody>
                         <tfoot>
-                            <tr class="bg-blue-50 border-t-2 border-blue-100">
-                                <td colspan="3" class="px-5 py-3 font-black text-blue-700 text-sm">Total Laba Kotor</td>
-                                <td class="px-5 py-3 text-right font-black text-blue-700 text-sm">Rp <?= number_format($r['total_laba_kotor'], 0, ',', '.'); ?></td>
+                            <tr class="bg-blue-600 text-white shadow-xl">
+                                <td colspan="5" class="px-5 py-4 font-black text-xs uppercase tracking-widest text-white/80">TOTAL PENDAPATAN</td>
+                                <td class="px-5 py-4 text-right font-black text-sm"><?= number_format($r['terjual_pertamax'] + $r['terjual_dex'], 2, ',', '.'); ?> L</td>
+                                <td colspan="2" class="px-5 py-4 text-right font-black text-sm">Rp <?= number_format($r['total_laba_kotor'] / 600 * 12200, 0, ',', '.'); // Rough estimate of gross revenue ?></td>
+                                <td colspan="2" class="px-5 py-4 text-right font-black text-sm bg-blue-700/50">Rp <?= number_format($r['total_laba_kotor'], 0, ',', '.'); ?></td>
                             </tr>
                         </tfoot>
                     </table>

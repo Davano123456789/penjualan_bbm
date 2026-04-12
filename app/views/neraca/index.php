@@ -127,23 +127,43 @@
                         </h4>
                         <div class="grid grid-cols-2 gap-4">
                             <div class="space-y-1">
-                                <label class="text-[10px] text-slate-400 font-black">LITER PX</label>
+                                <label class="text-[10px] text-slate-400 font-black italic">LITER PX</label>
                                 <input type="number" step="0.01" name="do_px_l" value="<?= $r['do_pertamax_liter']; ?>" class="w-full px-3 py-2 bg-slate-50 border-2 border-slate-100 rounded-xl font-bold text-slate-700 outline-none focus:border-blue-500 text-xs">
                             </div>
                             <div class="space-y-1">
-                                <label class="text-[10px] text-slate-400 font-black">NILAI RP PX</label>
+                                <label class="text-[10px] text-slate-400 font-black italic">NILAI RP PX</label>
                                 <input type="number" name="do_px_n" value="<?= $r['do_pertamax_nilai']; ?>" class="w-full px-3 py-2 bg-slate-50 border-2 border-slate-100 rounded-xl font-bold text-slate-700 outline-none focus:border-blue-500 text-xs js-aktiva">
                             </div>
                             <div class="space-y-1">
-                                <label class="text-[10px] text-slate-400 font-black">LITER DEX</label>
+                                <label class="text-[10px] text-slate-400 font-black italic">LITER DEX</label>
                                 <input type="number" step="0.01" name="do_dx_l" value="<?= $r['do_dex_liter']; ?>" class="w-full px-3 py-2 bg-slate-50 border-2 border-slate-100 rounded-xl font-bold text-slate-700 outline-none focus:border-blue-500 text-xs">
                             </div>
                             <div class="space-y-1">
-                                <label class="text-[10px] text-slate-400 font-black">NILAI RP DEX</label>
+                                <label class="text-[10px] text-slate-400 font-black italic">NILAI RP DEX</label>
                                 <input type="number" name="do_dx_n" value="<?= $r['do_dex_nilai']; ?>" class="w-full px-3 py-2 bg-slate-50 border-2 border-slate-100 rounded-xl font-bold text-slate-700 outline-none focus:border-blue-500 text-xs js-aktiva">
                             </div>
                         </div>
                     </div>
+
+                    <hr class="border-slate-50">
+
+                    <!-- PERSEDIAAN LAIN -->
+                    <div class="space-y-3">
+                        <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span> IV. PERSEDIAAN LAIN
+                        </h4>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between group">
+                                <span class="text-sm font-bold text-slate-600">Stok Oli</span>
+                                <span class="font-black text-slate-800 text-sm" id="display_stok_oli">Rp <?= number_format($r['modal_oli'], 0, ',', '.'); ?></span>
+                            </div>
+                            <div class="flex items-center justify-between group">
+                                <span class="text-sm font-bold text-slate-600">Stok Gas (LPG)</span>
+                                <span class="font-black text-slate-800 text-sm" id="display_stok_gas">Rp <?= number_format($r['modal_gas'], 0, ',', '.'); ?></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 </div>
 
                 <!-- TOTAL AKTIVA -->
@@ -207,14 +227,14 @@
                                 <span class="text-sm font-bold text-slate-600">Modal Oli</span>
                                 <div class="flex items-center gap-2 border-b-2 border-slate-100 group-focus-within:border-slate-800 transition-all pb-1">
                                     <span class="text-xs text-slate-400 font-bold">Rp</span>
-                                    <input type="number" name="modal_oli" value="<?= $r['modal_oli']; ?>" class="w-36 text-right bg-transparent font-black text-slate-800 outline-none js-pasiva">
+                                    <input type="number" name="modal_oli" id="input_modal_oli" value="<?= $r['modal_oli']; ?>" class="w-36 text-right bg-transparent font-black text-slate-800 outline-none js-pasiva">
                                 </div>
                             </div>
                             <div class="flex items-center justify-between group">
-                                <span class="text-sm font-bold text-slate-600">Modal Gas</span>
+                                <span class="text-sm font-bold text-slate-600">Modal Gas (LPG)</span>
                                 <div class="flex items-center gap-2 border-b-2 border-slate-100 group-focus-within:border-slate-800 transition-all pb-1">
                                     <span class="text-xs text-slate-400 font-bold">Rp</span>
-                                    <input type="number" name="modal_gas" value="<?= $r['modal_gas']; ?>" class="w-36 text-right bg-transparent font-black text-slate-800 outline-none js-pasiva">
+                                    <input type="number" name="modal_gas" id="input_modal_gas" value="<?= $r['modal_gas']; ?>" class="w-36 text-right bg-transparent font-black text-slate-800 outline-none js-pasiva">
                                 </div>
                             </div>
                             <div class="flex items-center justify-between group">
@@ -267,12 +287,17 @@ document.addEventListener('DOMContentLoaded', function() {
         let totalAktiva = 0;
         let totalPasiva = 0;
 
-        // Sum Aktiva (Cash + Stock + DO + Modal Oli/Gas)
+        // Sync Modal to display in Aktiva
+        const modalOli = parseFloat(document.getElementById('input_modal_oli').value) || 0;
+        const modalGas = parseFloat(document.getElementById('input_modal_gas').value) || 0;
+        document.getElementById('display_stok_oli').innerText = formatRp(modalOli);
+        document.getElementById('display_stok_gas').innerText = formatRp(modalGas);
+
+        // Sum Aktiva (Cash + Stock + DO + Other Inventory)
         document.querySelectorAll('.js-aktiva').forEach(el => totalAktiva += (parseFloat(el.value) || 0));
         document.querySelectorAll('.js-aktiva-fixed').forEach(el => totalAktiva += (parseFloat(el.value) || 0));
-        // Add Modal Oli/Gas from the Pasiva section because they also count as Asset Value (Inventory)
-        totalAktiva += (parseFloat(document.querySelector('input[name="modal_oli"]').value) || 0);
-        totalAktiva += (parseFloat(document.querySelector('input[name="modal_gas"]').value) || 0);
+        totalAktiva += modalOli;
+        totalAktiva += modalGas;
 
         // Sum Pasiva
         document.querySelectorAll('.js-pasiva').forEach(el => totalPasiva += (parseFloat(el.value) || 0));
@@ -282,8 +307,8 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('total_aktiva_display').innerText = formatRp(totalAktiva);
         document.getElementById('total_pasiva_display').innerText = formatRp(totalPasiva);
 
-        const selisih = Math.abs(totalAktiva - totalPasiva);
-        const isBalance = selisih < 10; // Tolerance for decimals
+        const selisih = Math.round(totalAktiva - totalPasiva);
+        const isBalance = Math.abs(selisih) < 100; // Increase tolerance to Rp 100 for rounding differences
 
         const statusIcon = document.getElementById('status_icon');
         const statusText = document.getElementById('status_text');
@@ -292,13 +317,13 @@ document.addEventListener('DOMContentLoaded', function() {
         if (isBalance) {
             statusIcon.className = "w-16 h-16 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center text-3xl animate-bounce";
             statusText.innerText = "NERACA SEIMBANG (BALANCE)";
-            statusText.className = "text-xl font-black text-emerald-600";
-            selisihText.innerText = "Kerja Bagus! Total Aset sama dengan Total Modal.";
+            statusText.className = "text-xl font-black text-emerald-600 uppercase italic";
+            selisihText.innerText = "Kerja Bagus! Total Aset sama dengan Total Modal & Utang.";
         } else {
             statusIcon.className = "w-16 h-16 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center text-3xl";
             statusText.innerText = "BELUM SEIMBANG";
-            statusText.className = "text-xl font-black text-rose-600";
-            selisihText.innerText = "Selisih: " + formatRp(totalAktiva - totalPasiva);
+            statusText.className = "text-xl font-black text-rose-600 uppercase italic";
+            selisihText.innerText = "Sisi Aktiva dan Pasiva berbeda " + formatRp(Math.abs(selisih));
         }
     }
 
