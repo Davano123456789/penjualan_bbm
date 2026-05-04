@@ -19,6 +19,9 @@
                     <i class="fas fa-filter"></i>
                 </button>
             </form>
+            <a href="<?= BASEURL; ?>/totakhir/cetak?bulan=<?= $data['bulan']; ?>&tahun=<?= $data['tahun']; ?>" target="_blank" class="px-5 py-2 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 shadow-lg shadow-emerald-500/30 transition-all flex items-center gap-2">
+                <i class="fas fa-print"></i> Cetak PDF
+            </a>
             <?php if (isset($data['report']['is_saved']) && $data['report']['is_saved']): ?>
                 <span class="px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl text-xs font-black uppercase tracking-widest border border-emerald-100 flex items-center gap-2">
                     <i class="fas fa-lock"></i> Terkunci

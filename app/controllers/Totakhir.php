@@ -30,4 +30,20 @@ class Totakhir extends Controller {
             exit;
         }
     }
+
+    public function cetak()
+    {
+        date_default_timezone_set('Asia/Jakarta');
+        $bulan = $_GET['bulan'] ?? date('m');
+        $tahun = $_GET['tahun'] ?? date('Y');
+
+        $data['judul'] = 'Laporan Laba Rugi Bulanan';
+        $data['bulan'] = $bulan;
+        $data['tahun'] = $tahun;
+
+        $totakhirModel = $this->model('Totakhir_model');
+        $data['report'] = $totakhirModel->getLaporanBulanan($bulan, $tahun);
+        
+        $this->view('tot-akhir/cetak', $data);
+    }
 }

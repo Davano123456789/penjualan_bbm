@@ -23,6 +23,10 @@
                 </button>
             </form>
             
+            <a href="<?= BASEURL; ?>/pengeluaran/cetak?bulan=<?= $data['bulan']; ?>&tahun=<?= $data['tahun']; ?>" target="_blank" class="px-5 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all flex items-center gap-2">
+                <i class="fas fa-print"></i> Cetak PDF
+            </a>
+            
             <a href="<?= BASEURL; ?>/kas" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all flex items-center gap-2">
                 <i class="fas fa-plus"></i> Input via Kas
             </a>

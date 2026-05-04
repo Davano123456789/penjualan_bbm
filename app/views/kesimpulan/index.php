@@ -21,9 +21,9 @@
                 </button>
             </form>
 
-            <button onclick="window.print()" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all flex items-center gap-2">
-                <i class="fas fa-print"></i> Cetak Laporan
-            </button>
+            <a href="<?= BASEURL; ?>/kesimpulan/cetak?bulan=<?= $data['bulan']; ?>&tahun=<?= $data['tahun']; ?>" target="_blank" class="px-5 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all flex items-center gap-2">
+                <i class="fas fa-print"></i> Cetak PDF
+            </a>
         </div>
     </div>
 
@@ -145,32 +145,4 @@
     </div>
 </div>
 
-<style>
-    @media print {
-        .bg-slate-800 {
-            background-color: #1e293b !important;
-            color: #ffffff !important;
-        }
-
-        .text-emerald-600 {
-            color: #059669 !important;
-        }
-
-        .text-blue-600 {
-            color: #2563eb !important;
-        }
-
-        button,
-        form {
-            display: none !important;
-        }
-
-        .rounded-[2rem] {
-            border-radius: 1rem !important;
-        }
-
-        body {
-            background: white !important;
-        }
-    }
-</style>
+</div>

@@ -180,4 +180,29 @@ class Stok extends Controller {
         header('Location: ' . BASEURL . '/stok');
         exit;
     }
+
+    public function cetak()
+    {
+        date_default_timezone_set('Asia/Jakarta');
+        $bulan = $_GET['bulan'] ?? date('m');
+        $tahun = $_GET['tahun'] ?? date('Y');
+
+        $data['judul']  = 'Laporan Stok BBM';
+        $data['bulan']  = $bulan;
+        $data['tahun']  = $tahun;
+
+        $rawStok = $this->model('Stok_model')->getStokBulan($bulan, $tahun);
+
+        $data['stok_pertamax'] = [];
+        $data['stok_dex']      = [];
+        foreach ($rawStok as $row) {
+            if (stripos($row['nama_produk'], 'pertamax') !== false) {
+                $data['stok_pertamax'][] = $row;
+            } elseif (stripos($row['nama_produk'], 'dex') !== false) {
+                $data['stok_dex'][] = $row;
+            }
+        }
+
+        $this->view('stok/cetak', $data);
+    }
 }

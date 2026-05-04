@@ -21,6 +21,9 @@
                     <i class="fas fa-filter mr-1"></i> Filter
                 </button>
             </form>
+            <a href="<?= BASEURL; ?>/stok/cetak?bulan=<?= $data['bulan']; ?>&tahun=<?= $data['tahun']; ?>" target="_blank" class="px-5 py-2 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 shadow-lg shadow-emerald-500/30 transition-all flex items-center gap-2">
+                <i class="fas fa-print"></i> Cetak PDF
+            </a>
             <a href="<?= BASEURL; ?>/stok/input" class="px-5 py-2 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition-all flex items-center gap-2">
                 <i class="fas fa-plus"></i> Input Stok
             </a>

@@ -16,4 +16,19 @@ class Kesimpulan extends Controller {
         
         $this->view('templates/layout', $data);
     }
+
+    public function cetak()
+    {
+        date_default_timezone_set('Asia/Jakarta');
+        $bulan = $_GET['bulan'] ?? date('m');
+        $tahun = $_GET['tahun'] ?? date('Y');
+
+        $data['judul'] = 'Laporan Kesimpulan Bulanan';
+        $data['bulan'] = $bulan;
+        $data['tahun'] = $tahun;
+
+        $data['kesimpulan'] = $this->model('Kesimpulan_model')->getKesimpulanData($bulan, $tahun);
+        
+        $this->view('kesimpulan/cetak', $data);
+    }
 }
