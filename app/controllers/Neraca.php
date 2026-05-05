@@ -30,4 +30,20 @@ class Neraca extends Controller {
             exit;
         }
     }
+
+    public function cetak()
+    {
+        date_default_timezone_set('Asia/Jakarta');
+        $bulan = $_GET['bulan'] ?? date('m');
+        $tahun = $_GET['tahun'] ?? date('Y');
+
+        $data['judul'] = 'Laporan Neraca Bulanan';
+        $data['bulan'] = $bulan;
+        $data['tahun'] = $tahun;
+
+        $neracaModel = $this->model('Neraca_model');
+        $data['report'] = $neracaModel->getNeracaBulanan($bulan, $tahun);
+
+        $this->view('neraca/cetak', $data);
+    }
 }
