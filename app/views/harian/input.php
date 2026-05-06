@@ -253,6 +253,30 @@
             </div>
         </div>
 
+        <!-- STOK FISIK (DIPSTICK) SECTION -->
+        <div class="bg-emerald-50/50 rounded-3xl border-2 border-dashed border-emerald-200 p-8 mb-8">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-10 h-10 bg-emerald-600 text-white rounded-xl flex items-center justify-center shadow-lg shadow-emerald-200">
+                    <i class="fas fa-ruler-vertical"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-black text-emerald-800">Laporan Stok Fisik (Dipstick)</h3>
+                    <p class="text-xs font-bold text-emerald-600/70 uppercase tracking-widest">Input sisa bbm di tangki pendam untuk update dashboard stok secara otomatis</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-5 rounded-2xl border border-emerald-100 shadow-sm">
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Sisa Pertamax di Tangki (Liter)</label>
+                    <input type="number" step="0.01" name="stok_fisik_pertamax" placeholder="0.00" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-black focus:ring-2 focus:ring-emerald-500">
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-emerald-100 shadow-sm">
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Sisa Dex di Tangki (Liter)</label>
+                    <input type="number" step="0.01" name="stok_fisik_dex" placeholder="0.00" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-black focus:ring-2 focus:ring-emerald-500">
+                </div>
+            </div>
+        </div>
+
         <!-- PRODUCT SUMMARY TABLE (YELLOW BOX IN EXCEL) -->
         <div class="bg-yellow-100/50 rounded-3xl border-2 border-dashed border-yellow-300 p-8">
             <div class="flex items-center gap-4 mb-6">

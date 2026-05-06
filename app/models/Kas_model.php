@@ -200,8 +200,41 @@ class Kas_model {
 
     public function hapusDataKas($id)
     {
-        // ... (existing code omitted for brevity but I need to include it if I'm replacing the whole block)
-        // Wait, I should replace just the end or add after.
+        // 1. Get current data to check for paired transaction or automatic entries
+        $this->db->query("SELECT transaksi_id, harian_id, pengeluaran_id FROM " . $this->table . " WHERE id = :id");
+        $this->db->bind('id', $id);
+        $current = $this->db->single();
+
+        if (!$current) return 0;
+
+        // Prevent deleting automatic entries (must be deleted from their respective menus)
+        if ($current['harian_id'] || $current['pengeluaran_id']) {
+            return 0; 
+        }
+
+        require_once 'EDC_model.php';
+        $edc_model = new EDC_model();
+
+        if (!empty($current['transaksi_id'])) {
+            // Delete Pair (Lemari & Arus)
+            $this->db->query("SELECT id FROM " . $this->table . " WHERE transaksi_id = :transaksi_id");
+            $this->db->bind('transaksi_id', $current['transaksi_id']);
+            $pairs = $this->db->resultSet();
+            foreach ($pairs as $p) {
+                $edc_model->deleteByKasId($p['id']);
+            }
+
+            $this->db->query("DELETE FROM " . $this->table . " WHERE transaksi_id = :transaksi_id");
+            $this->db->bind('transaksi_id', $current['transaksi_id']);
+        } else {
+            // Delete Single
+            $edc_model->deleteByKasId($id);
+            $this->db->query("DELETE FROM " . $this->table . " WHERE id = :id");
+            $this->db->bind('id', $id);
+        }
+
+        $this->db->execute();
+        return $this->db->rowCount();
     }
 
     public function ubahDataKas($data)

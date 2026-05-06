@@ -1,16 +1,19 @@
 <?php
 
 require_once 'Kas_model.php';
+require_once 'Stok_model.php';
 
 class Harian_model {
     private $table = 'harian';
     private $db;
     private $kasModel;
+    private $stokModel;
 
     public function __construct()
     {
         $this->db = new Database;
         $this->kasModel = new Kas_model();
+        $this->stokModel = new Stok_model();
     }
 
     public function getAllHarian()
@@ -120,6 +123,9 @@ class Harian_model {
                 $total_penjualan
             );
 
+            // 4. Sync to Stok (Stock Dashboard) - Pertamax & Dex
+            $this->syncStokFisik($data['tanggal'], $data);
+
             return true;
         }
 
@@ -138,6 +144,52 @@ class Harian_model {
                           ) p2 ON p1.id = p2.max_id
                           LEFT JOIN produk_bbm b ON p1.produk_id = b.id");
         return $this->db->resultSet();
+    }
+
+    private function syncStokFisik($tanggal, $data)
+    {
+        $products = [
+            'pertamax' => ['id' => 1, 'group' => [1, 2]],
+            'dex'      => ['id' => 3, 'group' => [3, 4]]
+        ];
+
+        foreach ($products as $key => $info) {
+            $fisikInput = $data['stok_fisik_' . $key] ?? null;
+            
+            // Only sync if user provided a value
+            if ($fisikInput !== null && $fisikInput !== '') {
+                $produk_id = $info['id'];
+                $fisik = floatval($fisikInput);
+
+                // Get existing data to preserve Kiriman and calculate Teori
+                $existing = $this->stokModel->getStokByTanggalProduk($tanggal, $produk_id);
+                
+                $stok_awal     = $existing ? floatval($existing['stok_awal']) : $this->stokModel->getStokAwalFromPrevious($tanggal, $produk_id);
+                $kiriman_masuk = $existing ? floatval($existing['kiriman_masuk']) : 0;
+                $terjual       = $this->stokModel->getTerjualByTanggalProdukGroup($tanggal, $info['group']);
+                
+                $total_tersedia   = $stok_awal + $kiriman_masuk;
+                $stok_akhir_teori = $total_tersedia - $terjual;
+                $selisih          = $fisik - $stok_akhir_teori;
+
+                $stokData = [
+                    'tanggal'          => $tanggal,
+                    'produk_id'        => $produk_id,
+                    'stok_awal'        => $stok_awal,
+                    'kiriman_masuk'    => $kiriman_masuk,
+                    'total_tersedia'   => $total_tersedia,
+                    'terjual'          => $terjual,
+                    'stok_akhir_teori' => $stok_akhir_teori,
+                    'stok_akhir_fisik' => $fisik,
+                    'selisih'          => $selisih,
+                    'catatan'          => $existing['catatan'] ?? 'Auto-sync dari Laporan Harian',
+                    'jadwal'           => $existing['jadwal'] ?? null,
+                    'nama_supir'       => $existing['nama_supir'] ?? null
+                ];
+
+                $this->stokModel->simpanStok($stokData);
+            }
+        }
     }
 
     private function getHarianIdByDate($tanggal)

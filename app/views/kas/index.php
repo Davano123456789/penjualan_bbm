@@ -90,11 +90,11 @@
                                             title="Edit Transaksi">
                                              <i class="fas fa-edit text-[10px]"></i>
                                          </button>
-                                         <a href="<?= BASEURL; ?>/kas/hapus/<?= $r['id']; ?>" onclick="return confirm('Hapus transaksi manual ini?')" 
+                                         <button onclick="confirmDelete('<?= BASEURL; ?>/kas/hapus/<?= $r['id']; ?>')" 
                                             class="w-7 h-7 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center shadow-sm"
                                             title="Hapus Transaksi">
                                              <i class="fas fa-trash-alt text-[10px]"></i>
-                                         </a>
+                                         </button>
                                          <?php else: ?>
                                          <div class="w-7 h-7 flex items-center justify-center" title="Sinkron otomatis dengan Harian">
                                              <i class="fas fa-link text-[10px] text-slate-300"></i>
@@ -168,11 +168,11 @@
                                             title="Edit Transaksi">
                                              <i class="fas fa-edit text-[10px]"></i>
                                          </button>
-                                         <a href="<?= BASEURL; ?>/kas/hapus/<?= $r['id']; ?>" onclick="return confirm('Hapus transaksi manual ini?')" 
+                                         <button onclick="confirmDelete('<?= BASEURL; ?>/kas/hapus/<?= $r['id']; ?>')" 
                                             class="w-7 h-7 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center shadow-sm"
                                             title="Hapus Transaksi">
                                              <i class="fas fa-trash-alt text-[10px]"></i>
-                                         </a>
+                                         </button>
                                          <?php else: ?>
                                          <div class="w-7 h-7 flex items-center justify-center" title="Sinkron otomatis dengan Harian">
                                              <i class="fas fa-link text-[10px] text-slate-300"></i>
@@ -330,5 +330,23 @@
                  toggleBiayaEdit(data.tipe);
                  document.getElementById('modalEditKas').classList.remove('hidden');
              });
+     }
+
+     function confirmDelete(url) {
+         Swal.fire({
+             title: 'Hapus Transaksi?',
+             text: "Data ini akan dihapus permanen dari Buku Kas!",
+             icon: 'warning',
+             showCancelButton: true,
+             confirmButtonColor: '#e11d48',
+             cancelButtonColor: '#64748b',
+             confirmButtonText: 'Ya, Hapus!',
+             cancelButtonText: 'Batal',
+             borderRadius: '1.5rem'
+         }).then((result) => {
+             if (result.isConfirmed) {
+                 window.location.href = url;
+             }
+         })
      }
  </script>

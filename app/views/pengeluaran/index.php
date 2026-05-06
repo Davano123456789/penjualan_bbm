@@ -114,11 +114,10 @@
                         <td class="px-6 py-4 font-black text-rose-600 text-right">Rp <?= number_format($r['jumlah'], 0, ',', '.'); ?></td>
                         <td class="px-6 py-4 text-center">
                             <div class="flex items-center justify-center gap-3">
-                                <a href="<?= BASEURL; ?>/pengeluaran/hapus/<?= $r['id']; ?>" 
-                                   onclick="return confirm('Hapus data ini dari Buku Kas?')"
-                                   class="text-slate-300 hover:text-rose-600 transition-colors">
+                                <button onclick="confirmDelete('<?= BASEURL; ?>/pengeluaran/hapus/<?= $r['id']; ?>')" 
+                                        class="text-slate-300 hover:text-rose-600 transition-colors">
                                     <i class="fas fa-trash"></i>
-                                </a>
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -128,3 +127,23 @@
         </div>
     </div>
 </div>
+
+<script>
+function confirmDelete(url) {
+    Swal.fire({
+        title: 'Hapus Data?',
+        text: "Data ini juga akan dihapus dari Buku Kas!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#e11d48',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Ya, Hapus!',
+        cancelButtonText: 'Batal',
+        borderRadius: '1.5rem'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = url;
+        }
+    })
+}
+</script>
