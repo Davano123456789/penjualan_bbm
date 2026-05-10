@@ -70,6 +70,9 @@
                                 <a href="<?= BASEURL; ?>/harian/detail/<?= $h['id']; ?>" class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-emerald-500 hover:text-white transition-all shadow-sm" title="Lihat Detail">
                                     <i class="fas fa-eye text-xs"></i>
                                 </a>
+                                <a href="<?= BASEURL; ?>/harian/edit/<?= $h['id']; ?>" class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-blue-500 hover:text-white transition-all shadow-sm" title="Edit Laporan">
+                                    <i class="fas fa-edit text-xs"></i>
+                                </a>
                                 <form action="<?= BASEURL; ?>/harian/hapus/<?= $h['id']; ?>" method="POST" class="inline-block form-hapus">
                                     <button type="button" class="btn-hapus w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-rose-500 hover:text-white transition-all shadow-sm" title="Hapus Laporan">
                                         <i class="fas fa-trash text-xs"></i>

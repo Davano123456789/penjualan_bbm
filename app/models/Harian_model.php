@@ -132,6 +132,79 @@ class Harian_model {
         return false;
     }
 
+    public function ubahDataHarian($data)
+    {
+        $harian_id = $data['id'];
+
+        // 1. Update 'harian' (Header)
+        $query = "UPDATE harian SET 
+                    tanggal = :tanggal, 
+                    jam_masuk = :jam_masuk, 
+                    jam_keluar = :jam_keluar, 
+                    operator1_id = :operator1_id, 
+                    operator2_id = :operator2_id, 
+                    total_penerimaan_kas = :total_penerimaan_kas, 
+                    total_pengeluaran = :total_pengeluaran, 
+                    total_titipan = :total_titipan, 
+                    total_sisa = :total_sisa
+                  WHERE id = :id";
+        
+        $this->db->query($query);
+        $this->db->bind('id',                   $harian_id);
+        $this->db->bind('tanggal',              $data['tanggal']);
+        $this->db->bind('jam_masuk',            !empty($data['jam_masuk']) ? $data['jam_masuk'] : null);
+        $this->db->bind('jam_keluar',           !empty($data['jam_keluar']) ? $data['jam_keluar'] : null);
+        $this->db->bind('operator1_id',         !empty($data['operator1_id']) ? $data['operator1_id'] : null);
+        $this->db->bind('operator2_id',         !empty($data['operator2_id']) ? $data['operator2_id'] : null);
+        $this->db->bind('total_penerimaan_kas', $data['total_penerimaan_kas']);
+        $this->db->bind('total_pengeluaran',    $data['total_pengeluaran']);
+        $this->db->bind('total_titipan',        $data['total_titipan']);
+        $this->db->bind('total_sisa',           $data['total_sisa'] ?? 0);
+        
+        $this->db->execute();
+
+        // 2. Delete and Re-insert 'penjualan_harian' for each nozzle
+        $this->db->query('DELETE FROM penjualan_harian WHERE harian_id = :harian_id');
+        $this->db->bind('harian_id', $harian_id);
+        $this->db->execute();
+
+        foreach ($data['penjualan'] as $p) {
+            if (empty($p['produk_id'])) continue;
+
+            $query_p = "INSERT INTO penjualan_harian (harian_id, produk_id, nozzle, totalisator_awal, totalisator_akhir, liter_terjual, total_rupiah) 
+                        VALUES (:harian_id, :produk_id, :nozzle, :awal, :akhir, :liter_terjual, :total_rupiah)";
+            $this->db->query($query_p);
+            $this->db->bind('harian_id', $harian_id);
+            $this->db->bind('produk_id', $p['produk_id']);
+            $this->db->bind('nozzle', $p['nozzle']);
+            $this->db->bind('awal', $p['awal'] ?? 0);
+            $this->db->bind('akhir', $p['akhir'] ?? 0);
+            $this->db->bind('liter_terjual', $p['liter_terjual']);
+            $this->db->bind('total_rupiah', $p['total_rupiah']);
+            $this->db->execute();
+        }
+        
+        // 3. Re-Sync to Kas (Buku Besar)
+        $total_penjualan = 0;
+        foreach ($data['penjualan'] as $p) {
+            if (!empty($p['produk_id'])) {
+                $total_penjualan += floatval($p['total_rupiah'] ?? 0);
+            }
+        }
+
+        $this->kasModel->syncFromHarian(
+            $harian_id, 
+            $data['tanggal'], 
+            "(Penjualan Harian)", 
+            $total_penjualan
+        );
+
+        // 4. Re-Sync to Stok (Stock Dashboard)
+        $this->syncStokFisik($data['tanggal'], $data);
+
+        return true;
+    }
+
     public function getLatestTotalizers()
     {
         // Get latest end totalizer for each nozzle

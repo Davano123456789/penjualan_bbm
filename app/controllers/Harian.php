@@ -76,6 +76,46 @@ class Harian extends Controller {
         $this->view('templates/layout', $data);
     }
 
+    public function edit($id)
+    {
+        $data['judul'] = 'Edit Laporan Harian';
+        $data['view'] = 'harian/edit';
+        
+        $data['harian'] = $this->model('Harian_model')->getHarianById($id);
+        $data['penjualan'] = $this->model('Harian_model')->getPenjualanByHarianId($id);
+        
+        // Fetch existing stok fisik if any
+        $stok_pertamax = $this->model('Stok_model')->getStokByTanggalProduk($data['harian']['tanggal'], 1);
+        $stok_dex = $this->model('Stok_model')->getStokByTanggalProduk($data['harian']['tanggal'], 3);
+        $data['stok_fisik_pertamax'] = $stok_pertamax ? $stok_pertamax['stok_akhir_fisik'] : '';
+        $data['stok_fisik_dex'] = $stok_dex ? $stok_dex['stok_akhir_fisik'] : '';
+
+        // Fetch products for the input form
+        $this->db->query('SELECT * FROM produk_bbm');
+        $data['produk'] = $this->db->resultSet();
+
+        // Fetch operators for the input form
+        $this->db->query('SELECT * FROM operators');
+        $data['operators'] = $this->db->resultSet();
+        
+        $this->view('templates/layout', $data);
+    }
+
+    public function ubah()
+    {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            if ($this->model('Harian_model')->ubahDataHarian($_POST)) {
+                Flasher::setFlash('Ini', 'Diubah', 'success');
+                header('Location: ' . BASEURL . '/harian');
+                exit;
+            } else {
+                Flasher::setFlash('Ini', 'Gagal Diubah', 'error');
+                header('Location: ' . BASEURL . '/harian');
+                exit;
+            }
+        }
+    }
+
     public function get_latest_readings()
     {
         $data = $this->model('Harian_model')->getLatestTotalizers();
