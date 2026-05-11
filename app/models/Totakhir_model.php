@@ -173,14 +173,17 @@ class Totakhir_model {
             'biaya_kas' => $biaya_kas,
             'biaya_pph' => $saved_data ? $saved_data['biaya_pph'] : 0,
             'biaya_admin_edc' => $saved_data ? $saved_data['biaya_admin_edc'] : 0,
-            'total_losis_rupiah' => $total_losis_rupiah,
+            'losis_pertamax' => $saved_data ? $saved_data['losis_pertamax'] : $detail_losis[0]['total_rp'],
+            'losis_dex' => $saved_data ? $saved_data['losis_dex'] : $detail_losis[1]['total_rp'],
+            'total_losis_rupiah' => $saved_data ? ($saved_data['losis_pertamax'] + $saved_data['losis_dex']) : $total_losis_rupiah,
             'detail_losis' => $detail_losis,
             'is_saved' => $saved_data ? true : false,
             'id' => $saved_data ? $saved_data['id'] : null
         ];
 
         // Laba Bersih
-        $report['total_pengeluaran'] = $report['biaya_gaji'] + $report['biaya_kas'] + $report['biaya_pph'] + $report['biaya_admin_edc'] + $report['total_losis_rupiah'];
+        $total_losis = $report['is_saved'] ? ($report['losis_pertamax'] + $report['losis_dex']) : $report['total_losis_rupiah'];
+        $report['total_pengeluaran'] = $report['biaya_gaji'] + $report['biaya_kas'] + $report['biaya_pph'] + $report['biaya_admin_edc'] + $total_losis;
         $report['laba_bersih'] = $report['total_laba_kotor'] - $report['total_pengeluaran'];
 
         return $report;
@@ -203,6 +206,8 @@ class Totakhir_model {
                                 biaya_kas = :kas,
                                 biaya_pph = :pph,
                                 biaya_admin_edc = :admin_edc,
+                                losis_pertamax = :losis_px,
+                                losis_dex = :losis_dex,
                                 total_pengeluaran = :pengeluaran,
                                 total_losis_rupiah = :losis,
                                 laba_bersih = :laba_bersih
@@ -210,15 +215,19 @@ class Totakhir_model {
             $this->db->bind('id', $report['id']);
         } else {
             $this->db->query("INSERT INTO laporan_bulanan 
-                                (periode, total_pendapatan_kotor, laba_pertamax, laba_dex, total_laba_kotor, biaya_gaji, biaya_kas, biaya_pph, biaya_admin_edc, total_pengeluaran, total_losis_rupiah, laba_bersih) 
+                                (periode, total_pendapatan_kotor, laba_pertamax, laba_dex, total_laba_kotor, biaya_gaji, biaya_kas, biaya_pph, biaya_admin_edc, losis_pertamax, losis_dex, total_pengeluaran, total_losis_rupiah, laba_bersih) 
                               VALUES 
-                                (:periode, :total_kotor, :laba_px, :laba_dex, :laba_kotor, :gaji, :kas, :pph, :admin_edc, :pengeluaran, :losis, :laba_bersih)");
+                                (:periode, :total_kotor, :laba_px, :laba_dex, :laba_kotor, :gaji, :kas, :pph, :admin_edc, :losis_px, :losis_dex, :pengeluaran, :losis, :laba_bersih)");
             $this->db->bind('periode', $periode);
         }
 
         $pph = $data['biaya_pph'] ?? 0;
         $admin_edc = $data['biaya_admin_edc'] ?? 0;
-        $pengeluaran = $report['biaya_gaji'] + $report['biaya_kas'] + $pph + $admin_edc + $report['total_losis_rupiah'];
+        $losis_px = $data['losis_pertamax'] ?? 0;
+        $losis_dex = $data['losis_dex'] ?? 0;
+        $total_losis = $losis_px + $losis_dex;
+        
+        $pengeluaran = $report['biaya_gaji'] + $report['biaya_kas'] + $pph + $admin_edc + $total_losis;
         $laba_bersih = $report['total_laba_kotor'] - $pengeluaran;
 
         $this->db->bind('total_kotor', 0); // Can be populated if needed
@@ -229,8 +238,10 @@ class Totakhir_model {
         $this->db->bind('kas', $report['biaya_kas']);
         $this->db->bind('pph', $pph);
         $this->db->bind('admin_edc', $admin_edc);
+        $this->db->bind('losis_px', $losis_px);
+        $this->db->bind('losis_dex', $losis_dex);
         $this->db->bind('pengeluaran', $pengeluaran);
-        $this->db->bind('losis', $report['total_losis_rupiah']);
+        $this->db->bind('losis', $total_losis);
         $this->db->bind('laba_bersih', $laba_bersih);
 
         return $this->db->execute();

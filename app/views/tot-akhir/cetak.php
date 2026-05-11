@@ -122,12 +122,14 @@
                         <td class="border border-slate-300 px-3 py-2">4. Admin EDC</td>
                         <td class="border border-slate-300 px-3 py-2 text-right font-bold">Rp <?= number_format($r['biaya_admin_edc'], 0, ',', '.'); ?></td>
                     </tr>
-                    <?php foreach($r['detail_losis'] as $idx => $dl): ?>
-                    <tr class="bg-amber-50/30">
-                        <td class="border border-slate-300 px-3 py-2 italic"><?= ($idx + 5); ?>. Losis <?= $dl['produk']; ?> (<?= number_format($dl['volume'], 2, ',', '.'); ?> L)</td>
-                        <td class="border border-slate-300 px-3 py-2 text-right font-bold">Rp <?= number_format($dl['total_rp'], 0, ',', '.'); ?></td>
+                    <tr>
+                        <td class="border border-slate-300 px-3 py-2">5. Losis Pertamax</td>
+                        <td class="border border-slate-300 px-3 py-2 text-right font-bold">Rp <?= number_format($r['losis_pertamax'], 0, ',', '.'); ?></td>
                     </tr>
-                    <?php endforeach; ?>
+                    <tr>
+                        <td class="border border-slate-300 px-3 py-2">6. Losis Dex</td>
+                        <td class="border border-slate-300 px-3 py-2 text-right font-bold">Rp <?= number_format($r['losis_dex'], 0, ',', '.'); ?></td>
+                    </tr>
                 </tbody>
                 <tfoot class="bg-slate-900 text-white font-black uppercase text-xs tracking-tighter">
                     <tr>

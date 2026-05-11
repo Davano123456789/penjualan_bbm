@@ -181,17 +181,28 @@
                                         <span class="block text-[9px] text-slate-400 font-bold text-right mt-1">Input Manual</span>
                                     </td>
                                 </tr>
-                                <?php foreach($r['detail_losis'] as $idx => $dl): ?>
-                                <tr class="bg-amber-50/50">
-                                    <td class="px-5 py-4 font-bold text-amber-700">
-                                        <?= ($idx + 5); ?>. Losis <?= $dl['produk']; ?> 
-                                        <span class="text-[10px] font-black ml-1">(<?= number_format($dl['volume'], 2, ',', '.'); ?> L)</span>
-                                    </td>
-                                    <td class="px-5 py-4 text-right font-black text-amber-700 text-sm">
-                                        Rp <?= number_format($dl['total_rp'], 0, ',', '.'); ?>
+                                <tr>
+                                    <td class="px-5 py-4 font-bold text-slate-700">5. Losis Pertamax</td>
+                                    <td class="px-5 py-4 text-right">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <span class="text-slate-400 font-bold text-sm">Rp</span>
+                                            <input type="number" step="any" name="losis_pertamax" value="<?= $r['losis_pertamax']; ?>" placeholder="0"
+                                                class="w-40 px-3 py-2 bg-white border-2 border-slate-200 rounded-xl text-right font-black text-slate-700 focus:border-blue-500 outline-none text-sm">
+                                        </div>
+                                        <span class="block text-[9px] text-slate-400 font-bold text-right mt-1">Isi Otomatis (Dapat Diedit)</span>
                                     </td>
                                 </tr>
-                                <?php endforeach; ?>
+                                <tr>
+                                    <td class="px-5 py-4 font-bold text-slate-700">6. Losis Dex</td>
+                                    <td class="px-5 py-4 text-right">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <span class="text-slate-400 font-bold text-sm">Rp</span>
+                                            <input type="number" step="any" name="losis_dex" value="<?= $r['losis_dex']; ?>" placeholder="0"
+                                                class="w-40 px-3 py-2 bg-white border-2 border-slate-200 rounded-xl text-right font-black text-slate-700 focus:border-blue-500 outline-none text-sm">
+                                        </div>
+                                        <span class="block text-[9px] text-slate-400 font-bold text-right mt-1">Isi Otomatis (Dapat Diedit)</span>
+                                    </td>
+                                </tr>
                             </tbody>
                             <tfoot>
                                 <tr class="bg-rose-50 border-t-2 border-rose-100">
@@ -223,7 +234,7 @@
                         <button type="submit" class="w-full py-4 bg-slate-800 text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg hover:bg-slate-700 hover:-translate-y-0.5 transition-all">
                             <i class="fas fa-save mr-2"></i> Kunci & Simpan Laporan Ini
                         </button>
-                        <p class="text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-3">PPH & Admin EDC akan tersimpan, data lain otomatis.</p>
+                        <p class="text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-3">PPH, Admin EDC & Losis akan tersimpan, data lain otomatis.</p>
                     </div>
                 </form>
             </div>

@@ -22,9 +22,9 @@ class Totakhir extends Controller {
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if ($this->model('Totakhir_model')->simpanLaporan($_POST)) {
-                Flasher::setFlash('berhasil', 'Laporan Laba Rugi berhasil dikunci/disimpan', 'success');
+                Flasher::setFlash('Laporan Laba Rugi', 'berhasil dikunci/disimpan', 'success');
             } else {
-                Flasher::setFlash('gagal', 'Laporan gagal disimpan', 'danger');
+                Flasher::setFlash('Laporan Laba Rugi', 'gagal disimpan', 'danger');
             }
             header('Location: ' . BASEURL . '/totakhir?bulan=' . $_POST['bulan'] . '&tahun=' . $_POST['tahun']);
             exit;

@@ -17,8 +17,8 @@ class Flasher
             $f = $_SESSION['flash'];
             echo "<script>
                     Swal.fire({
-                        title: 'Berhasil!',
-                        text: 'Laporan harian " . $f['pesan'] . " berhasil " . $f['aksi'] . "!',
+                        title: '" . ($f['tipe'] == 'success' ? 'Berhasil!' : 'Perhatian') . "',
+                        text: '" . $f['pesan'] . " " . $f['aksi'] . "',
                         icon: '" . $f['tipe'] . "',
                         confirmButtonColor: '#3085d6',
                         confirmButtonText: 'Tutup'
